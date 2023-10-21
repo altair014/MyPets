@@ -1,0 +1,29 @@
+{% extends 'pets.html' %}
+
+{% block 'content' %}
+
+<!-- <form method="POST" class="m-2 was-validated"> -->
+<form method="POST" class="m-1">   
+    {% csrf_token %}
+    <!-- {{form.as_p}} -->
+    {% for item in form %}
+    <p>
+      {{item.label}}
+      {{item}}
+    </p>
+    <!-- <div class="fw-bold text-info">
+      {{item.errors | striptags}}
+    </div> -->
+    {% endfor %}
+    <!-- <div class="pb-2 invalid-feedback"> -->
+    <div class="pb-2" style="font-size: smaller; color: rgb(196, 42, 42)">
+      {{form.non_field_errors | striptags}} 
+    </div>
+    <div>
+        <input class="btn btn-primary" type="submit" value="Login">
+        <!-- <a href="{% url 'pets_app_name:user_create_name' %}" class="btn btn-info">Sign Up</a> -->
+     </div>
+
+</form>
+
+{% endblock %}

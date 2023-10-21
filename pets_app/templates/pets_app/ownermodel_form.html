@@ -1,0 +1,23 @@
+{% extends 'pets.html' %}
+
+{% block 'content' %}
+<form method="POST" class="m-1">
+    {% csrf_token %}
+    {% for item in form %}
+    <p>
+        {{item.label}}
+        {{item}}
+        {% if item.errors %}
+        <div style="font-size: smaller; color: rgb(196, 42, 42)">
+            {{item.errors | striptags}}
+        </div>
+        {% endif %}
+    </p>
+    {% endfor %}
+    <div class="pb-2" style="font-size: smaller; color: rgb(196, 42, 42)">
+        {{owner_form.non_field_errors | striptags}} 
+    </div>
+
+    <input class="btn btn-success" type="submit" value="Add Pet Owner">
+</form>
+{% endblock %}

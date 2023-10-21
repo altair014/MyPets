@@ -1,0 +1,40 @@
+{% extends 'pets.html' %}
+
+{% block 'content' %}
+    {% if perms.pets_app.add_petinformation %}    
+        <div class="mb-2">
+            <a class="text-decoration-none" href="{% url 'pets_app_name:pet_create_name' %}"><button type="button" class="btn btn-light">Add Pet</button></a>
+        </div>
+    {% endif %}
+    <div class="d-flex">
+        <div class="d-flex">
+            <table class="table table-hover table-borderless opacity-75">
+                <thead class="table-dark">
+                    <th>S.No</th>
+                </thead>
+                {% if object_list %}
+                    {% for num in s_no %}
+                    <tr>
+                        <td>{{num}}</td>
+                    </tr>        
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
+        <div class="d-flex flex-fill">
+            <table class="table table-hover table-borderless opacity-75">
+                <thead class="table-dark">
+                    <th>Date</th><th>Name</th><th>Pet Type</th>
+                </thead>
+                {% for pet in object_list %}
+                <tr>
+                    <td>{{pet.date}}</td>
+                    <td><a class="text-decoration-none" href="{% url 'pets_app_name:pet_detail_name' pet.id %}">{{pet.name | capfirst}}</a></td>
+                    <td>{{pet.pet_type}}</td>
+                </tr>        
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
+

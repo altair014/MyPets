@@ -1,0 +1,131 @@
+{% extends 'pets.html' %}
+
+{% load static %}
+
+{% block 'content' %}
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 text-center" style="margin-left: calc(35%);"  id="staticBackdropLabel">!!!WARNING!!!</h1>
+        <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Would you like to delete the pet record?
+      </div>
+      <div class="modal-footer">
+          <form action="{% url 'pets_app_name:pet_delete_name' petinformation.id %}" method="POST">
+              {% csrf_token %}
+              <input type="submit" class="btn btn-danger" data-bs-dismiss="modal" value="Yes">
+          </form>
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% if perms.pets_app.add_petservices %}    
+<div class="mb-2">
+    <a class="text-decoration-none" href="{% url 'pets_app_name:service_create_name' %}?next={{request.path}}"><button type="button" class="btn btn-light">Add Service</button></a>
+</div>
+{% endif %}
+<div class="d-flex justify-content-between">
+  <div class="d-flex flex-column flex-grow-1">
+    <!-- <div class="d-flex justify-content-between border">
+      <div class="d-flex flex-fill">
+        None
+      </div>
+      <br>
+      <div class="d-flex flex-fill">
+        None
+      </div>
+      <div class="d-flex flex-fill">
+        None
+      </div>
+    </div> -->
+    
+    <div class="d-flex flex-column ">
+        <div class="d-flex justify-content-between border">
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex fw-bold ms-1 my-1">Date</div>
+          </div>
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex fw-bold ms-1 my-1">Time</div>
+          </div>
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex fw-bold ms-1 my-1">Service</div>
+          </div>
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex fw-bold ms-1 my-1">Groomin</div>
+          </div>
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex fw-bold ms-1 my-1">Doctor</div>
+          </div>
+        </div>
+        {% for item in petservice%}
+        <div class="d-flex justify-content-between border">
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex">
+              {{item.date}}
+            </div>
+          </div>
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex">
+              {{item.time}}
+            </div>
+          </div>
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex">
+              {{item.service_required}}
+            </div>
+          </div>
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex">
+              {{item.grooming_type}}
+            </div>
+          </div>
+          <div class="d-flex flex-fill justify-content-center">
+            <div class="d-flex">
+            {{item.consultation_type}}
+          </div>
+          </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="d-flex flex-column">  
+    <div class="d-flex flex-column me-2" style="background-color: rgb(232, 214, 180);">
+      <div class="d-flex">
+        {% if petinformation.pet_image %}  
+          <img class="d-flex flex-fill" src="{{petinformation.pet_image.url}}" alt="Image Not Found">
+        {% else %}
+          <img src="{% static 'images/none2.jpg' %}" alt="paws.img">
+        {% endif %}
+    </div>
+    <div class="d-flex my-2">
+      <div>
+        <div class="fw-bold ms-1 my-1">Name</div>
+        <div class="fw-bold ms-1 my-1">Age</div>
+        <div class="fw-bold ms-1 my-1">Gender</div>
+        <div class="fw-bold ms-1 my-1">Weight</div>
+        <div class="fw-bold ms-1 my-1">Pet Type</div>
+      </div>
+      <div class="ps-3">
+        <div class="my-1">{{petinformation.name | capfirst}}</div>
+        <div class="my-1">{{petinformation.age}}</div>
+        <div class="my-1">{{petinformation.gender}}</div>
+        <div class="my-1">{{petinformation.weight}}</div>
+        <div class="my-1">{{petinformation.pet_type}}</div>
+      </div>      
+    </div>
+    {% if perms.pets_app.change_petinformation %}
+      <div class="btn-group mx-1 my-1">
+          <a href="#" class="btn pet_red btn-sm text-decoration-none" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Delete</a>
+          <a class="btn btn-info btn-sm text-decoration-none" href="{% url 'pets_app_name:pet_update_name' petinformation.id %}?next={{request.path}}">Update</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

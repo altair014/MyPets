@@ -1,0 +1,15 @@
+/* .errorlist{
+  list-style-type: none;
+  color: rgb(197, 35, 62);
+  font-size: smaller;
+} */
+
+.pet_red{
+  background-color: var(--pet_red);
+  color: white;
+}
+
+.pet_red:hover{
+  background-color: var(--pet_red_light);
+  color: white;
+}

@@ -1,0 +1,92 @@
+{% extends 'pets.html' %}
+
+{% block 'content' %}
+
+<form method="POST" class="m-1">
+    {% csrf_token %}
+    {% for item in form %}
+        {% if item.label == 'Grooming Type' %}
+            <p>
+                <label id="grooming_label" hidden>{{item.label}}</label>
+                {{item}}
+                {% if item.errors %}
+                <div style="font-size: smaller; color: rgb(196, 42, 42)">
+                    {{item.errors | striptags}}
+                </div>
+                {% endif %}
+            </p>
+        {% elif item.label == 'Consultation Type' %}
+            <p>
+                <label id="consultation_label" hidden>{{item.label}}</label>
+                {{item}}
+                {% if item.errors %}
+                <div style="font-size: smaller; color: rgb(196, 42, 42)">
+                    {{item.errors | striptags}}
+                </div>
+                {% endif %}
+            </p>
+        {% else %}
+            <p>
+                {{item.label}}
+                {{item}}
+                {% if item.errors %}
+                <div style="font-size: smaller; color: rgb(196, 42, 42)">
+                    {{item.errors | striptags}}
+                </div>
+                {% endif %}
+            </p>
+        {% endif %}
+    {% endfor %}    
+
+    <div class="pb-2" style="font-size: smaller; color: rgb(196, 42, 42)">
+        {{form.non_field_errors | striptags}} 
+    </div>    
+    <input class="btn btn-success" type="submit" value="Add Pet">
+</form>
+<script>
+    function myFunction() {
+        console.log('I am entering.')
+        let service_field = document.getElementById("id_service_required");
+        let consultation_field = document.getElementById("id_consultation_type");
+        let consultation_label = document.getElementById("consultation_label");
+        let grooming_field = document.getElementById("id_grooming_type");
+        let grooming_label = document.getElementById("grooming_label");
+        console.log(service_field.value)
+        if (service_field.value === "Grooming"){
+            consultation_field.hidden = true;
+            consultation_field.required = false;
+            consultation_label.hidden = true;
+            grooming_field.hidden = false;
+            grooming_field.required = true;
+            grooming_label.hidden = false;
+        }                          
+        else if (service_field.value === "Consultation") {
+            consultation_field.hidden = false;
+            consultation_field.required = true;
+            consultation_label.hidden = false;
+            grooming_field.hidden = true;
+            grooming_field.required = false;
+            grooming_label.hidden = true;
+            }
+        else {
+            consultation_field.hidden = false;
+            consultation_field.required = true;
+            consultation_label.hidden = false;
+            grooming_field.hidden = false;
+            grooming_field.required = true;
+            grooming_label.hidden = false;
+            }
+        }
+    function onPageLoad(){
+            let service = document.getElementById("id_service_required");
+            console.log(service.value)
+            if (service.value === 'Consultation'){
+              let consultation = document.getElementById("id_consultation_type");
+              let consultation_label = document.getElementById("consultation_label");
+              consultation.hidden = false;
+              consultation_label.hidden = false;
+            }
+        }
+        onPageLoad()
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'pets.html' %}
+
+{% block 'content' %}
+
+<script>
+    function myFunction() {
+                            let checkBox = document.getElementById("id_admin");
+                            let field = document.getElementById("id_key");
+                            let label = document.getElementById("key_label");
+                            if (checkBox.checked == true){
+                                field.hidden = false;
+                                field.required = true
+                                label.hidden = false;
+                                                        } 
+                            else {
+                                field.hidden = true;
+                                field.required = false
+                                label.hidden = true;
+                                }
+                            }
+</script>
+
+
+<form method="POST" class="m-1">   
+    {% csrf_token %}
+
+    {% for item in form %}
+        {% if item.label != 'Key' %}
+        <p>
+            {{item.label}}
+            {{item}}
+        </p>
+        {% else %}
+            <p>
+                <label id="key_label" hidden>{{item.label}}</label>
+                {{item}}
+            </p>
+                {% endif %}
+    {% endfor %}
+    <div class="pb-2" style="font-size: smaller; color: rgb(196, 42, 42)">
+        {{form.non_field_errors | striptags}} 
+    </div>
+    <div>
+        <input class="btn btn-primary" type="submit" value="Create Account">
+        <!-- <a href="{% url 'pets_app_name:user_login_name' %}" class="btn btn-info">Sign In</a> -->
+    </div>
+</form>
+
+{% endblock %}
