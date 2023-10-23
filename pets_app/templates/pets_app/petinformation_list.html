@@ -3,7 +3,7 @@
 {% block 'content' %}
     {% if perms.pets_app.add_petinformation %}    
         <div class="mb-2">
-            <a class="text-decoration-none" href="{% url 'pets_app_name:pet_create_name' %}"><button type="button" class="btn btn-light">Add Pet</button></a>
+            <a class="text-decoration-none" href="{% url 'pets_app_name:pet_create_name' number %}"><button type="button" class="btn btn-light">Add Pet</button></a>
         </div>
     {% endif %}
     <div class="d-flex">

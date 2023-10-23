@@ -53,7 +53,7 @@ class PetInformation(Model):
     breed = models.CharField(max_length=20, choices=Breed.choices, default=Breed.Indie)
     gender = models.CharField(max_length=7, choices=PetGender.choices, default=PetGender.Male)
     image = models.ImageField(upload_to='images/', blank=True)
-    contact = models.ForeignKey(to=OwnerModel, on_delete=models.CASCADE)
+    owner = models.ForeignKey(to=OwnerModel, on_delete=models.CASCADE, null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse(viewname='pets_app_name:pet_detail_name', kwargs={'pk':self.pk})    
@@ -62,7 +62,6 @@ class PetServices(Model):
     class PetServiceType(models.TextChoices):
         GROOMING = 'Grooming','Grooming'
         CONSULTATION = 'Consultation','Consultation'
-        BOTH = 'Both'+'Both'
 
     class Grooming(models.TextChoices):
         HAIR_CUTTING = 'Hair Cutting', 'Hair Cutting'
@@ -83,5 +82,4 @@ class PetServices(Model):
     date = models.DateField(auto_created=True, auto_now_add=True)
     time = models.TimeField(auto_created=True, auto_now_add=True)
     pet_name = models.CharField(max_length=10, blank=True)
-    contact = models.PositiveIntegerField(blank=True)
     id_2 = models.PositiveBigIntegerField(blank=True)

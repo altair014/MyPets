@@ -97,6 +97,13 @@ class OwnerCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, Creat
     success_url = reverse_lazy('pets_app_name:pet_create_name')
     permission_required = 'pets_app.add_ownermodel'
 
+    def get_success_url(self):
+        owner_list = OwnerModel.objects.all()
+        list_id = []
+        for iten in owner_list:
+            list_id.append(iten.id)
+        return f"/pets/pet_list_route/{list_id[-1]}"
+        
     def get(self, request, *args, **kwargs):
         if len(CountryModel.objects.all())==0:
             CountryModel.objects.create(country_name='IND', country_code='+91')
@@ -113,6 +120,14 @@ class OwnerCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, Creat
 class OwnerListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListView):
     model = OwnerModel
     permission_required = 'pets_app.view_ownermodel'
+
+    def get(self, request, *args, **kwargs):
+        owners = OwnerModel.objects.all()
+        s_no = []
+        for item in range(len(owners)):
+            print(item)
+            s_no.append(item+1)
+        return render(request=request, template_name='pets_app/ownermodel_list.html', context={'object_list':owners, 's_no':s_no})
 
 class OwnerDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailView):
     model = OwnerModel
@@ -134,43 +149,53 @@ class PetInformationCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMix
     form_class = PetInformationForm
     permission_required = 'pets_app.add_petinformation'
 
+    def nub(self):
+        nubm = ''
+        for item in self.request.path:
+            if item.isdigit():
+                nubm = nubm+item
+        return int(nubm)
+
     def get_success_url(self):
-        success_url = '/pets/pet_list_route/' + str(self.request.POST.get('contact'))
+        nu=self.nub()
+        success_url = '/pets/pet_list_route/' + str(nu)
         return success_url
 
     def post(self, request, *args, **kwargs):
         petinfo_form = PetInformationForm(self.request.POST, self.request.FILES)
            
         if petinfo_form.is_valid():
+            nu=self.nub()
             pet_data = petinfo_form.cleaned_data
-            pet_data.pop('image')            
             print(pet_data)
             try:
                 PetInformation.objects.get(**pet_data)
             except PetInformation.DoesNotExist:
                 petinfo_form.save(commit=True)
+                sleep(2)
+                nu=self.nub()
+                PetInformation.objects.filter(**pet_data).update(owner_id=nu)
                 success(request=self.request, message=f'''A new pet record with the name "{petinfo_form.cleaned_data.get('name').capitalize()}" has been created successfully.''')
-            sleep(3)            
+            sleep(2)            
             return redirect(to=self.get_success_url())
  
         return super().form_invalid(form=petinfo_form)
 
-class PetListView(SomeLoginRequiredMixin, ListView):
+class PetListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListView):
     model = PetInformation
     permission_required = 'pets_app.view_petinformation'
 
-
-    def get(self, request, contact, *args, **kwargs):
-        pets = PetInformation.objects.all().filter(contact=contact)
+    def get(self, request, number, *args, **kwargs):
+        pets = PetInformation.objects.all().filter(owner_id=number)
         s_no = []
         for item in range(len(pets)):
             print(item)
             s_no.append(item+1)
         try:
-            queryset = PetInformation.objects.all().filter(contact=contact)
+            queryset = pets.filter(owner_id=number)
         except PetInformation.DoesNotExist:
-            queryset = PetInformation.objects.all()
-        return render(request=request, template_name='pets_app/petinformation_list.html', context={'object_list':queryset, 's_no':s_no})
+            queryset = pets
+        return render(request=request, template_name='pets_app/petinformation_list.html', context={'object_list':queryset, 's_no':s_no, 'number':number})
 
 
 class PetDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailView):
@@ -179,7 +204,7 @@ class PetDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailV
     
     def get(self, request, pk, *args, **kwargs):
         petinformation = PetInformation.objects.get(id=pk)
-        petservice = PetServices.objects.filter(pet_name=petinformation.name, contact=petinformation.contact.owner_contact, id_2=pk)
+        petservice = PetServices.objects.filter(pet_name=petinformation.name, id_2=pk)
         return render(request=request, template_name='pets_app/petinformation_detail.html', context={'petinformation':petinformation, 'petservice':petservice})
 
 class PetUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, UpdateView):
@@ -200,10 +225,10 @@ class PetDeleteView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DeleteV
     permission_required = 'pets_app.delete_petinformation'
 
     def post(self, request, pk, *args, **kwargs):
-        contact= (PetInformation.objects.get(id=pk).contact.owner_contact)
+        id= (PetInformation.objects.get(id=pk).owner_id)
         PetInformation.objects.get(id=pk).delete()
         PetServices.objects.filter(id_2=pk).delete()
-        return redirect(to='/pets/pet_list_route/'+str(contact))
+        return redirect(to='/pets/pet_list_route/'+str(id))
     
 class ServiceCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, CreateView):
     model = PetServices
@@ -221,10 +246,9 @@ class ServiceCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, Cre
                     identity = identity+item
             identity = int(identity)
             test = PetInformation.objects.get(id=identity)
-            contact = test.contact.owner_contact
             number = test.pk
             name = test.name
-            service_data.update({'id_2':number, 'contact':contact, 'pet_name':name})
+            service_data.update({'id_2':number, 'pet_name':name})
             print(service_data)
             PetServices.objects.create(**service_data)
             # try:
@@ -252,4 +276,3 @@ class ServiceUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, Upd
 class ServiceDeleteView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DeleteView):
     model = PetServices
     permission_required = 'pets_app.delete_petservices'
-

@@ -105,7 +105,7 @@ class PetInformationForm(ModelForm):
     class Meta:
         model = PetInformation
         fields = '__all__'
-        # exclude = ('pet_image',)
+        exclude = ('owner',)
         
         widgets = {
                     'name':forms.TextInput(attrs={'class':'form-control my-2 w-auto' }), 
@@ -115,7 +115,6 @@ class PetInformationForm(ModelForm):
                     'gender':forms.Select(attrs={'class':'form-select my-2 w-auto'}),
                     'weight':forms.NumberInput(attrs={'class':'form-control my-2 w-auto'}),
                     'image':forms.FileInput(attrs={'class':'form-control mt-4 mb-2 w-auto'}),
-                    'contact':forms.Select(attrs={'class':'form-select my-2 w-auto'}),
                     }
         labels = {
                     'name':'Pet Name',
@@ -125,7 +124,6 @@ class PetInformationForm(ModelForm):
                     'gender': 'Gender ',
                     'weight':'Weight ',
                     'image':'',
-                    'contact':'Contact'
         }
  
     def clean(self):
@@ -151,18 +149,3 @@ class PetServicesForm(ModelForm):
             'grooming_type': 'Grooming Type',
             'consultation_type': 'Consultation Type'
             }
-        
-class OwnerForm(ModelForm):
-    class Meta:
-        model = OwnerModel
-        fields = '__all__'
-        widgets = {
-            'owner_name' : forms.TextInput(attrs={'class':'form-control my-2 w-auto'}),
-            'contact_prefix' : forms.Select(attrs={'class':'form-select my-2 w-auto'}),
-            'contact' : forms.NumberInput(attrs={'class':'form-control my-2 w-auto'}),
-        }
-        labels = {
-            'owner_name' : 'Owner Name',
-            'contact_prefix' : 'Country Code',
-            'contact' : 'Contact Number',
-        }

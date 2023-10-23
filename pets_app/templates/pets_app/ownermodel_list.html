@@ -6,18 +6,32 @@
         <a class="text-decoration-none" href="{% url 'pets_app_name:owner_create_name' %}"><button type="button" class="btn btn-light">Add Owner</button></a>
     </div>
     {% endif %}
+    <div class="d-flex">
+        <div class="d-flex">
+            <table class="table table-hover table-borderless opacity-75">
+                <thead class="table-dark">
+                    <th>S.No</th>
+                </thead>
+                {% if object_list %}
+                    {% for num in s_no %}
+                    <tr>
+                        <td>{{num}}</td>
+                    </tr>        
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
     <table class="table table-hover table-borderless opacity-75">
         <thead class="table-dark">
-            <th>S.No</th><th>Date</th><th>Name</th><th>Contact</th>
+            <th>Date</th><th>Name</th><th>Contact</th>
         </thead>
         <tbody>
             {% for owner in object_list %}
             <tr>
                 <!-- <td><a href="/pets/pet_detail_route/{{pet.id}}">{{pet.name}}</a></td> -->
 
-                <td>{{owner.id}}</td>
                 <td>{{owner.owner_date}}</td>
-                <td><a class="text-decoration-none" href="{% url 'pets_app_name:pet_list_name' owner.owner_contact %}">{{owner.owner_name | capfirst}}</a></td>
+                <td><a class="text-decoration-none" href="{% url 'pets_app_name:pet_list_name' owner.id %}">{{owner.owner_name | capfirst}}</a></td>
                 <td>{{owner.owner_contact_prefix}}-{{owner.owner_contact}}</td>
             </tr>        
             {% endfor %}
