@@ -167,6 +167,7 @@ class PetInformationCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMix
         if petinfo_form.is_valid():
             nu=self.nub()
             pet_data = petinfo_form.cleaned_data
+            pet_data.pop('image')
             print(pet_data)
             try:
                 PetInformation.objects.get(**pet_data)
@@ -205,7 +206,11 @@ class PetDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailV
     def get(self, request, pk, *args, **kwargs):
         petinformation = PetInformation.objects.get(id=pk)
         petservice = PetServices.objects.filter(pet_name=petinformation.name, id_2=pk)
-        return render(request=request, template_name='pets_app/petinformation_detail.html', context={'petinformation':petinformation, 'petservice':petservice})
+        s_no = []
+        for item in range(len(petservice)):
+            print(item)
+            s_no.append(item+1)
+        return render(request=request, template_name='pets_app/petinformation_detail.html', context={'petinformation':petinformation, 'petservice':petservice, 's_no':s_no,})
 
 class PetUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, UpdateView):
     model = PetInformation
