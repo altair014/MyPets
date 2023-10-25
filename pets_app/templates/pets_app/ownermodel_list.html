@@ -6,6 +6,7 @@
         <a class="text-decoration-none" href="{% url 'pets_app_name:owner_create_name' %}"><button type="button" class="btn btn-light">Add Owner</button></a>
     </div>
     {% endif %}
+    {% if object_list %}
     <div class="d-flex">
         <div class="d-flex">
             <table class="table table-hover table-borderless opacity-75">
@@ -37,6 +38,8 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
+
 
 {% endblock %}
 

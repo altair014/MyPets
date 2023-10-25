@@ -1,8 +1,3 @@
-from typing import Any
-from django.db import models
-from django.db.models.query import QuerySet
-from django.forms.models import BaseModelForm
-from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
 from django.urls import reverse_lazy, reverse
@@ -168,14 +163,13 @@ class PetInformationCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMix
             nu=self.nub()
             pet_data = petinfo_form.cleaned_data
             pet_data.pop('image')
-            print(pet_data)
+            pet_data['owner_id']=nu
             try:
                 PetInformation.objects.get(**pet_data)
+                info(request=self.request, message=f'''A pet record with this data already exists.''')
             except PetInformation.DoesNotExist:
-                petinfo_form.save(commit=True)
+                PetInformation.objects.create(**pet_data)
                 sleep(2)
-                nu=self.nub()
-                PetInformation.objects.filter(**pet_data).update(owner_id=nu)
                 success(request=self.request, message=f'''A new pet record with the name "{petinfo_form.cleaned_data.get('name').capitalize()}" has been created successfully.''')
             sleep(2)            
             return redirect(to=self.get_success_url())
@@ -197,7 +191,6 @@ class PetListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListView)
         except PetInformation.DoesNotExist:
             queryset = pets
         return render(request=request, template_name='pets_app/petinformation_list.html', context={'object_list':queryset, 's_no':s_no, 'number':number})
-
 
 class PetDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailView):
     model = PetInformation
