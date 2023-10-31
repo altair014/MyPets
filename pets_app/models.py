@@ -19,6 +19,8 @@ class OwnerModel(Model):
     owner_city = models.CharField(max_length=30, default='Bengaluru')
     owner_state = models.CharField(max_length=30, default='Karnataka')
     owner_country = models.CharField(max_length=30, default='India')
+    created_by = models.CharField(max_length=30, blank=True, null=True)
+    updated_by = models.CharField(max_length=30, blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse(viewname='pets_app_name:owner_detail_name', kwargs={'pk':self.pk}) 
@@ -54,6 +56,8 @@ class PetInformation(Model):
     gender = models.CharField(max_length=7, choices=PetGender.choices, default=PetGender.Male)
     image = models.ImageField(upload_to='images/', blank=True)
     owner = models.ForeignKey(to=OwnerModel, on_delete=models.CASCADE, null=True, blank=True)
+    created_by = models.CharField(max_length=30, blank=True, null=True)
+    updated_by = models.CharField(max_length=30, blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse(viewname='pets_app_name:pet_detail_name', kwargs={'pk':self.pk})    
@@ -83,3 +87,5 @@ class PetServices(Model):
     time = models.TimeField(auto_created=True, auto_now_add=True)
     pet_name = models.CharField(max_length=10, blank=True)
     id_2 = models.PositiveBigIntegerField(blank=True)
+    created_by = models.CharField(max_length=30, blank=True, null=True)
+    updated_by = models.CharField(max_length=30, blank=True, null=True)

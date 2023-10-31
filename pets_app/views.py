@@ -1,3 +1,5 @@
+from typing import Any
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
 from django.urls import reverse_lazy, reverse
@@ -63,7 +65,7 @@ class UserLoginFormView(FormView):
     form_class = UserLogin
     template_name = 'pets_app/userlogin.html' 
     
-    def get(self, request, *args, **kwargs):            
+    def get(self, request, *args, **kwargs):   
         if len(get_messages(request=request)) == 0 and not request.user.is_authenticated:
             info(request=request, message='Please provide your credentials.')
         else:
@@ -117,6 +119,8 @@ class OwnerListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListVie
     permission_required = 'pets_app.view_ownermodel'
 
     def get(self, request, *args, **kwargs):
+        print(self.request.session.session_key)    
+        print(self.request.user)     
         owners = OwnerModel.objects.all()
         s_no = []
         for item in range(len(owners)):
@@ -163,7 +167,8 @@ class PetInformationCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMix
             nu=self.nub()
             pet_data = petinfo_form.cleaned_data
             pet_data.pop('image')
-            pet_data['owner_id']=nu
+            pet_data.update({'owner_id':nu, 'created_by':request.user})
+
             try:
                 PetInformation.objects.get(**pet_data)
                 info(request=self.request, message=f'''A pet record with this data already exists.''')
@@ -218,6 +223,24 @@ class PetUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, UpdateV
             info(request=self.request, message='No changes has been performed.')
         return super().form_valid(form)
 
+    def post(self, request, *args, **kwargs):
+        a = PetInformationForm(request.POST)
+        b = PetInformation.objects.filter(id=self.get_object().pk).values()[0]
+        b.pop('id')
+        b.pop('date')
+        b.pop('image')
+        b.pop('created_by')
+        b.pop('owner_id')
+        b.pop('updated_by')
+        if a.is_valid():
+            a.cleaned_data.pop('image')
+            if a.cleaned_data!=b:
+                sleep(1)
+                PetInformation.objects.filter(id=self.get_object().pk).update(updated_by=self.request.user.username)
+                sleep(1)
+        return super().post(request, *args, **kwargs)
+ 
+    
 class PetDeleteView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DeleteView):
     model = PetInformation
     permission_required = 'pets_app.delete_petinformation'
@@ -246,7 +269,7 @@ class ServiceCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, Cre
             test = PetInformation.objects.get(id=identity)
             number = test.pk
             name = test.name
-            service_data.update({'id_2':number, 'pet_name':name})
+            service_data.update({'id_2':number, 'pet_name':name, 'created_by':request.user})
             print(service_data)
             PetServices.objects.create(**service_data)
             # try:

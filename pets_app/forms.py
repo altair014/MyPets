@@ -80,6 +80,7 @@ class OwnerModelForm(ModelForm):
     class Meta:
         model=OwnerModel
         fields='__all__'
+        exclude = ('created_by', 'updated_by')
 
         widgets={
                 "owner_name":forms.TextInput(attrs={'class':'form-control my-2 w-auto' }),
@@ -105,7 +106,7 @@ class PetInformationForm(ModelForm):
     class Meta:
         model = PetInformation
         fields = '__all__'
-        exclude = ('owner',)
+        exclude = ('owner','created_by', 'updated_by')
         
         widgets = {
                     'name':forms.TextInput(attrs={'class':'form-control my-2 w-auto' }), 
