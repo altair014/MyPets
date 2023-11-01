@@ -1,7 +1,7 @@
 {% extends 'pets.html' %}
 
 {% block 'content' %}
-    <form method="POST" enctype="multipart/form-data" class="m-1">
+    <form method="POST" class="m-1">
         {% csrf_token %}
         {{form.as_p}}
         <div>

@@ -119,12 +119,9 @@ class OwnerListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListVie
     permission_required = 'pets_app.view_ownermodel'
 
     def get(self, request, *args, **kwargs):
-        print(self.request.session.session_key)    
-        print(self.request.user)     
         owners = OwnerModel.objects.all()
         s_no = []
         for item in range(len(owners)):
-            print(item)
             s_no.append(item+1)
         return render(request=request, template_name='pets_app/ownermodel_list.html', context={'object_list':owners, 's_no':s_no})
 
@@ -189,7 +186,6 @@ class PetListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListView)
         pets = PetInformation.objects.all().filter(owner_id=number)
         s_no = []
         for item in range(len(pets)):
-            print(item)
             s_no.append(item+1)
         try:
             queryset = pets.filter(owner_id=number)
@@ -206,7 +202,6 @@ class PetDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailV
         petservice = PetServices.objects.filter(pet_name=petinformation.name, id_2=pk)
         s_no = []
         for item in range(len(petservice)):
-            print(item)
             s_no.append(item+1)
         return render(request=request, template_name='pets_app/petinformation_detail.html', context={'petinformation':petinformation, 'petservice':petservice, 's_no':s_no,})
 
@@ -216,28 +211,22 @@ class PetUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, UpdateV
     template_name = 'pets_app/pet_update_form.html'
     permission_required = 'pets_app.change_petinformation'
 
-    def form_valid(self, form):
-        if form.has_changed():
-            success(request=self.request, message=f'''The record with the name "{form.cleaned_data.get('name')}" record has been updated successfully.''')
-        else:
-            info(request=self.request, message='No changes has been performed.')
-        return super().form_valid(form)
-
     def post(self, request, *args, **kwargs):
-        a = PetInformationForm(request.POST)
-        b = PetInformation.objects.filter(id=self.get_object().pk).values()[0]
-        b.pop('id')
-        b.pop('date')
-        b.pop('image')
-        b.pop('created_by')
-        b.pop('owner_id')
-        b.pop('updated_by')
-        if a.is_valid():
-            a.cleaned_data.pop('image')
-            if a.cleaned_data!=b:
-                sleep(1)
+        pet_upd = PetInformationForm(request.POST, request.FILES)
+        pet_db = PetInformation.objects.filter(id=self.get_object().pk).values()[0]
+        pet_db.pop('id')
+        pet_db.pop('date')
+        pet_db.pop('image')
+        pet_db.pop('created_by')
+        pet_db.pop('owner_id')
+        pet_db.pop('updated_by')
+        if pet_upd.is_valid():
+            a = pet_upd.cleaned_data.pop('image')
+            if pet_upd.cleaned_data!=pet_db or a != None:
                 PetInformation.objects.filter(id=self.get_object().pk).update(updated_by=self.request.user.username)
-                sleep(1)
+                success(request=self.request, message=f'''The record with the name "{pet_upd.cleaned_data.get('name')}" record has been updated successfully.''')
+            else:
+                info(request=self.request, message='No changes has been performed.')
         return super().post(request, *args, **kwargs)
  
     

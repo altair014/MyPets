@@ -137,8 +137,8 @@
   <div class="d-flex flex-column">  
     <div class="d-flex flex-column me-2" style="background-color: rgb(232, 214, 180);">
       <div class="d-flex">
-        {% if petinformation.pet_image %}  
-          <img class="d-flex flex-fill" src="{{petinformation.pet_image.url}}" alt="Image Not Found">
+        {% if petinformation.image %}  
+          <img class="d-flex flex-fill" src="{{petinformation.image.url}}" alt="{% static 'images/none2.jpg' %}">
         {% else %}
           <img src="{% static 'images/none2.jpg' %}" alt="paws.img">
         {% endif %}
