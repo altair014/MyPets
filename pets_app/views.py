@@ -1,4 +1,5 @@
 from typing import Any
+from django import http
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
@@ -26,6 +27,12 @@ from time import sleep
 
 class PetsView(TemplateView):
     template_name = 'pets.html'
+
+    def get(self, request, *args, **kwargs):
+        print(request.session.session_key)
+        print(request.session.set_expiry(20))
+        print(request.session.get_expiry_age())
+        return super().get(request, *args, **kwargs)
     
 class UserCreateView(FormView):
     form_class = UserLogup
