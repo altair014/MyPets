@@ -25,13 +25,17 @@ from random import randrange, randint
 
 from time import sleep
 
+def set_expir(req, timer=10):
+    print(req.session.session_key)
+    if req.user.is_authenticated:
+        req.session.set_expiry(timer)
+    print(req.session.get_expiry_age())
+
 class PetsView(TemplateView):
     template_name = 'pets.html'
 
     def get(self, request, *args, **kwargs):
-        print(request.session.session_key)
-        print(request.session.set_expiry(20))
-        print(request.session.get_expiry_age())
+        set_expir(req=request)
         return super().get(request, *args, **kwargs)
     
 class UserCreateView(FormView):
@@ -43,6 +47,7 @@ class UserCreateView(FormView):
     _staff_key = str(randrange(999999,2147483646,(randint(1,9)))) #for now later will be replaced by o-auth or jwt-auth
 
     def get(self, request, *args, **kwargs):
+        set_expir(req=request)
         info(request=request, message='Please provide your credentials.')
         print(f'{self._admin_key}\n{self._staff_key}')
         return super().get(request, *args, **kwargs)
@@ -72,7 +77,8 @@ class UserLoginFormView(FormView):
     form_class = UserLogin
     template_name = 'pets_app/userlogin.html' 
     
-    def get(self, request, *args, **kwargs):   
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)   
         if len(get_messages(request=request)) == 0 and not request.user.is_authenticated:
             info(request=request, message='Please provide your credentials.')
         else:
@@ -109,6 +115,7 @@ class OwnerCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, Creat
         return f"/pets/pet_list_route/{list_id[-1]}"
         
     def get(self, request, *args, **kwargs):
+        set_expir(req=request)
         if len(CountryModel.objects.all())==0:
             CountryModel.objects.create(country_name='IND', country_code='+91')
         return super().get(request, *args, **kwargs)
@@ -126,6 +133,7 @@ class OwnerListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListVie
     permission_required = 'pets_app.view_ownermodel'
 
     def get(self, request, *args, **kwargs):
+        set_expir(req=request)
         owners = OwnerModel.objects.all()
         s_no = []
         for item in range(len(owners)):
@@ -151,6 +159,10 @@ class PetInformationCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMix
     model = PetInformation
     form_class = PetInformationForm
     permission_required = 'pets_app.add_petinformation'
+
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)
+        return super().get(request, *args, **kwargs)
 
     def nub(self):
         nubm = ''
@@ -190,6 +202,7 @@ class PetListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListView)
     permission_required = 'pets_app.view_petinformation'
 
     def get(self, request, number, *args, **kwargs):
+        set_expir(req=request)
         pets = PetInformation.objects.all().filter(owner_id=number)
         s_no = []
         for item in range(len(pets)):
@@ -205,6 +218,7 @@ class PetDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailV
     permission_required = 'pets_app.view_petinformation'
     
     def get(self, request, pk, *args, **kwargs):
+        set_expir(req=request)
         petinformation = PetInformation.objects.get(id=pk)
         petservice = PetServices.objects.filter(pet_name=petinformation.name, id_2=pk)
         s_no = []
@@ -217,6 +231,10 @@ class PetUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, UpdateV
     form_class = PetInformationForm
     template_name = 'pets_app/pet_update_form.html'
     permission_required = 'pets_app.change_petinformation'
+
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         pet_upd = PetInformationForm(request.POST, request.FILES)
@@ -241,6 +259,10 @@ class PetDeleteView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DeleteV
     model = PetInformation
     permission_required = 'pets_app.delete_petinformation'
 
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)
+        return super().get(request, *args, **kwargs)
+
     def post(self, request, pk, *args, **kwargs):
         id= (PetInformation.objects.get(id=pk).owner_id)
         PetInformation.objects.get(id=pk).delete()
@@ -251,6 +273,10 @@ class ServiceCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, Cre
     model = PetServices
     form_class = PetServicesForm
     permission_required = 'pets_app.add_petservices'
+
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         service_form = PetServicesForm(self.request.POST)
@@ -281,15 +307,32 @@ class ServiceListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListV
     model = PetServices
     permission_required = 'pets_app.view_petservices'
 
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)
+        return super().get(request, *args, **kwargs)
+
 
 class ServiceDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailView):
     model = PetServices
     permission_required = 'pets_app.view_petservices'
 
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)
+        return super().get(request, *args, **kwargs)
+
 class ServiceUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, UpdateView):
     model = PetServices
     permission_required = 'pets_app.change_petservices'
 
+
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)
+        return super().get(request, *args, **kwargs)
+
 class ServiceDeleteView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DeleteView):
     model = PetServices
     permission_required = 'pets_app.delete_petservices'
+
+    def get(self, request, *args, **kwargs):
+        set_expir(req=request)
+        return super().get(request, *args, **kwargs)

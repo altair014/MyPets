@@ -1,5 +1,7 @@
 {% extends 'pets.html' %}
 
+{{ redirect_to_login_immediately }}
+
 {% block 'content' %}
     {% if perms.pets_app.add_ownermodel %}    
     <div class="mb-2">
