@@ -25,7 +25,7 @@ from random import randrange, randint
 
 from time import sleep
 
-def set_expir(req, timer=10):
+def set_expir(req, timer=120):
     print(req.session.session_key)
     if req.user.is_authenticated:
         req.session.set_expiry(timer)
