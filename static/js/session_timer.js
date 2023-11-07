@@ -12,14 +12,10 @@ function myTimer() {                                            // definding a f
         timeContainer.innerText = `Your session will expire in 0${minutes}:${seconds}`;
     }
     
-    console.log(seconds);                                       // printing the value of counter in the browser console.
     if (minutes === 0 && seconds === 0) {                                        
         clearInterval(intervalId);
-        console.log('Your session is over.')
         location.reload();                                      //refreshing the page after 10 seconds automatically.
     }
-
-    
     
     if (seconds === 0) {
         if (minutes !== 0) {

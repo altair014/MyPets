@@ -25,7 +25,9 @@ from random import randrange, randint
 
 from time import sleep
 
-def set_expir(req, timer=120):
+from pets_site.settings import SESSION_COOKIE_AGE
+
+def set_expir(req, timer=SESSION_COOKIE_AGE):
     print(req.session.session_key)
     if req.user.is_authenticated:
         req.session.set_expiry(timer)
