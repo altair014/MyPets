@@ -1,7 +1,7 @@
-let minutes = 1;
-let seconds = 60;                                               // declaring of a local variable counter with the initial value 
+let minutes = 2;
+let seconds = 0;                                               // declaring of a local variable counter with the initial value 
 const timeContainer = document.createElement('div');            // creating of the "div" element
-timeContainer.setAttribute("class","link link-primary")
+timeContainer.setAttribute("class","link link-danger")
 let logo = document.querySelector('.navbar-brand');             // selecting the element with the class.
 logo.after(timeContainer);                                      // inserting the "div" element after element logo.
 function myTimer() {                                            // definding a function with the timer logic.
