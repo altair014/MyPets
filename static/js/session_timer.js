@@ -1,4 +1,4 @@
-let minutes = 2;
+let minutes = 300 / 60;
 let seconds = 0;                                               // declaring of a local variable counter with the initial value 
 const timeContainer = document.createElement('div');            // creating of the "div" element
 timeContainer.setAttribute("class","link link-danger")

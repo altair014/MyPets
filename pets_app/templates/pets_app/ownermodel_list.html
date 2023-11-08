@@ -8,40 +8,55 @@
         <a class="text-decoration-none" href="{% url 'pets_app_name:owner_create_name' %}"><button type="button" class="btn btn-light">Add Owner</button></a>
     </div>
     {% endif %}
-    {% if object_list %}
+    {% if page_obj %}
     <div class="d-flex">
         <div class="d-flex">
             <table class="table table-hover table-borderless opacity-75">
                 <thead class="table-dark">
                     <th>S.No</th>
                 </thead>
-                {% if object_list %}
                     {% for num in s_no %}
                     <tr>
                         <td>{{num}}</td>
                     </tr>        
                     {% endfor %}
-                {% endif %}
             </table>
         </div>
-    <table class="table table-hover table-borderless opacity-75">
-        <thead class="table-dark">
-            <th>Date</th><th>Name</th><th>Contact</th>
-        </thead>
-        <tbody>
-            {% for owner in object_list %}
-            <tr>
-                <!-- <td><a href="/pets/pet_detail_route/{{pet.id}}">{{pet.name}}</a></td> -->
+        <table class="table table-hover table-borderless opacity-75">
+            <thead class="table-dark">
+                <th>Date</th><th>Name</th><th>Contact</th>
+            </thead>
+            <tbody>
+                {% for owner in page_obj %}
+                <tr>
+                    <!-- <td><a href="/pets/pet_detail_route/{{pet.id}}">{{pet.name}}</a></td> -->
+                        
+                    <td>{{owner.owner_date}}</td>
+                    <td><a class="text-decoration-none" href="{% url 'pets_app_name:pet_list_name' owner.id %}">{{owner.owner_name | capfirst}}</a></td>
+                    <td>{{owner.owner_contact_prefix}}-{{owner.owner_contact}}</td>
+                </tr>        
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    <div class="d-flex">
+        {% if page_obj.has_previous %}
+            <a class="text-decoration-none" href="?page=1">&lt;&lt;</a>                                                      <!-- &laquo; == <<, it is an html attribute hence not mandatory -->
+            <a class="text-decoration-none" href="?page={{ page_obj.previous_page_number }}">&nbsp;&nbsp;&nbsp;&lt;</a>        <!-- &nbsp is used to add spaces in html -->
+        {% else %}
+            <div style="color: white;">&lt;&lt;</div>
+            <div style="color: white;">&nbsp;&nbsp;&nbsp;&lt;</div>
+        {% endif %}
 
-                <td>{{owner.owner_date}}</td>
-                <td><a class="text-decoration-none" href="{% url 'pets_app_name:pet_list_name' owner.id %}">{{owner.owner_name | capfirst}}</a></td>
-                <td>{{owner.owner_contact_prefix}}-{{owner.owner_contact}}</td>
-            </tr>        
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+        <span class="current">
+            &nbsp;&nbsp;&nbsp; {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
 
-
+        {% if page_obj.has_next %}
+            <a class="text-decoration-none" href="?page={{ page_obj.next_page_number }}">&nbsp;&nbsp; &gt;</a>
+            <a class="text-decoration-none" href="?page={{ page_obj.paginator.num_pages }}">&nbsp;&nbsp; &gt;&gt;</a> <!-- &raquo; == <<, it is an html attribute hence not mandatory -->
+        {% endif %}
+    </div> 
 {% endblock %}
 

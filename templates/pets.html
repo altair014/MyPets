@@ -15,8 +15,7 @@
         <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'pets_app_name:pets_name' %}">
             <img src="{% static 'images/paw.jpg' %}" alt="paws.img" width="30" height="24" class="d-inline-flex align-text-top">
-            MyPets
-            
+            MyPets          
           </a>
           <div class="d-flex column-gap-3">
             {% if request.user.is_authenticated %}

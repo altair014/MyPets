@@ -130,6 +130,8 @@ class OwnerCreateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, Creat
             return super().form_valid(form)
         return super().form_invalid(form)
 
+from django.core.paginator import Paginator
+
 class OwnerListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListView):
     model = OwnerModel
     permission_required = 'pets_app.view_ownermodel'
@@ -137,16 +139,21 @@ class OwnerListView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, ListVie
     def get(self, request, *args, **kwargs):
         set_expir(req=request)
         owners = OwnerModel.objects.all()
+        paginator = Paginator(object_list=owners, per_page=2)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number) 
         s_no = []
-        for item in range(len(owners)):
-            s_no.append(item+1)
-        return render(request=request, template_name='pets_app/ownermodel_list.html', context={'object_list':owners, 's_no':s_no})
+        for item in range(page_obj.start_index(), page_obj.end_index()+1):
+            s_no.append(item)
+        print(s_no)
+
+        return render(request=request, template_name='pets_app/ownermodel_list.html', context={'s_no':s_no, "page_obj": page_obj}) 
 
 class OwnerDetailView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, DetailView):
     model = OwnerModel
     permission_required = 'pets_app.view_ownermodel'
 
-class OwnerUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, UpdateView)        :
+class OwnerUpdateView(SomeLoginRequiredMixin, SomePermissionRequiredMixin, UpdateView):
     model = OwnerModel
     form_class = OwnerModelForm
     template_name = 'pets_app/owner_update_form.html'
